@@ -1,0 +1,8 @@
+version: "3.5"
+services:
+  alpha-service:
+    container_name: alpha-service
+    image: alpha-service
+    build: ./
+    ports:
+      - "8083:8083"
