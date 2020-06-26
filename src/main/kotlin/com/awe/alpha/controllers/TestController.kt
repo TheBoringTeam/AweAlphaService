@@ -8,20 +8,14 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
 
-@RestController
+@RestController("/api/test")
 class TestController {
 
     @Autowired
     private lateinit var _alphaService: AlphaService
 
-//    @GetMapping("/test")
-//    @ResponseBody
-//    fun testSendValue(): ResponseEntity<String> {
-//        _alphaService.sendEvent("test uuid : ${UUID.randomUUID()}")
-//        return ResponseEntity.ok("Fine")
-//    }
 
-    @GetMapping("/test-response")
+    @GetMapping("/test-doubly-linked-response")
     @ResponseBody
     fun testSendAndReceiveValue(): ResponseEntity<String> {
         val response = _alphaService.sendResponseEvent()
