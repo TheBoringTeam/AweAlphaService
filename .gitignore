@@ -29,3 +29,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### App ###
+resources/bootstrap.properties
+resources/application-dummy.yml

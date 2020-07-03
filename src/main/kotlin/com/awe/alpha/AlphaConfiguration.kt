@@ -1,5 +1,8 @@
 package com.awe.alpha
 
+import com.awe.alpha.persistence.domain.Account
+import com.awe.alpha.persistence.dto.request.AccountSignUpForm
+import com.awe.alpha.persistence.dto.stream.AccountStream
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cloud.context.config.annotation.RefreshScope
 import org.springframework.context.annotation.Bean
@@ -17,8 +20,8 @@ import org.xerial.snappy.buffer.DefaultBufferAllocator.factory
 class AlphaConfiguration {
 
     @Bean
-    fun replyingKafkaTemplate(pf: ProducerFactory<String, String>, factory: ConcurrentKafkaListenerContainerFactory<String, String>)
-            : ReplyingKafkaTemplate<*, *, *> {
+    fun replyingCreateUserTemplate(pf: ProducerFactory<String, String>, factory: ConcurrentKafkaListenerContainerFactory<String, String>)
+            : ReplyingKafkaTemplate<String, String, String> {
         // Create response container
         val replyContainer: ConcurrentMessageListenerContainer<String, String> = factory.createContainer("to-alpha-result")
         // Setup container properties

@@ -1,0 +1,14 @@
+spring:
+  kafka:
+    bootstrap-servers:
+      - 34.90.124.7:9092
+    template:
+      default-topic: alpha-service-topic
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  application:
+    name: alpha-service
+
+server:
+  port: 8083

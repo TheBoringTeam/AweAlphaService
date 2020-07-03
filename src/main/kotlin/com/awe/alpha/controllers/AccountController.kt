@@ -9,15 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.ResponseBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 
-@RestController("/api/user")
-
+@RestController
+@RequestMapping("api/user")
 class AccountController @Autowired constructor(val _accountService: AccountServiceImpl) {
 
     private val _logger = Logger.getLogger(AccountController::class.java)
@@ -26,7 +23,7 @@ class AccountController @Autowired constructor(val _accountService: AccountServi
     @ResponseBody
     fun register(@Valid @RequestBody accountSignUpForm: AccountSignUpForm, bindingResult: BindingResult,
                  request: HttpServletRequest): ResponseEntity<*> {
-        _logger.debug("Start register process")
+        _logger.debug("Start register process...")
 
         if (bindingResult.hasErrors()) {
             throw WrongArgumentsException(bindingResult.allErrors[0].defaultMessage)
@@ -34,10 +31,10 @@ class AccountController @Autowired constructor(val _accountService: AccountServi
 
         val account = _accountService.createAccount(accountSignUpForm)
 
-        _logger.debug("User was created")
-
-        // send registration mail via event
-        applicationEventPublisher.publishEvent(OnRegistrationCompleteEvent(account, request.locale, request.contextPath))
+        _logger.debug("Account with username [${account.username}] was created")
+//
+//        // send registration mail via event
+//        applicationEventPublisher.publishEvent(OnRegistrationCompleteEvent(account, request.locale, request.contextPath))
 
         return ResponseEntity.status(HttpStatus.CREATED).body(BasicStringResponse("Account was successfully created"))
     }

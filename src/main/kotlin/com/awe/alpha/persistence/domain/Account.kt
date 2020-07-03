@@ -1,8 +1,13 @@
 package com.awe.alpha.persistence.domain
 
-data class Account(
-        val username: String,
-        val password: String,
-        val fullName: String
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
 
+data class Account @JsonCreator constructor(
+        @JsonProperty("username")
+        val username: String,
+        @JsonProperty("password")
+        val password: String,
+        @JsonProperty("full_name")
+        val fullName: String
 )

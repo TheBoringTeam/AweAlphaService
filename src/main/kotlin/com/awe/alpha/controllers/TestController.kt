@@ -15,10 +15,10 @@ class TestController {
     private lateinit var _alphaService: AlphaService
 
 
-    @GetMapping("/test-doubly-linked-response")
-    @ResponseBody
-    fun testSendAndReceiveValue(): ResponseEntity<String> {
-        val response = _alphaService.sendResponseEvent()
-        return ResponseEntity.ok(response)
-    }
+//    @GetMapping("/test-doubly-linked-response")
+//    @ResponseBody
+//    fun testSendAndReceiveValue(): ResponseEntity<String> {
+//        val response = _alphaService.sendResponseEvent()
+//        return ResponseEntity.ok(response)
+//    }
 }
