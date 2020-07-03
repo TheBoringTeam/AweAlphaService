@@ -31,5 +31,5 @@ build/
 .vscode/
 
 ### App ###
-resources/bootstrap.properties
-resources/application-dummy.yml
+/resources/bootstrap.properties
+/resources/application-dummy.yml
