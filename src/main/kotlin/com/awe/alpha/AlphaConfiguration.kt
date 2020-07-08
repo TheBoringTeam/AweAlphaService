@@ -1,9 +1,5 @@
 package com.awe.alpha
 
-import com.awe.alpha.persistence.domain.Account
-import com.awe.alpha.persistence.dto.request.AccountSignUpForm
-import com.awe.alpha.persistence.dto.stream.AccountStream
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.cloud.context.config.annotation.RefreshScope
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -11,7 +7,6 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate
-import org.xerial.snappy.buffer.DefaultBufferAllocator.factory
 
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
@@ -23,7 +18,7 @@ class AlphaConfiguration {
     fun replyingCreateUserTemplate(pf: ProducerFactory<String, String>, factory: ConcurrentKafkaListenerContainerFactory<String, String>)
             : ReplyingKafkaTemplate<String, String, String> {
         // Create response container
-        val replyContainer: ConcurrentMessageListenerContainer<String, String> = factory.createContainer("to-alpha-result")
+        val replyContainer: ConcurrentMessageListenerContainer<String, String> = factory.createContainer("toAlphaResult")
         // Setup container properties
         replyContainer.containerProperties.isMissingTopicsFatal = false
         replyContainer.containerProperties.groupId = "alpha-service-group"

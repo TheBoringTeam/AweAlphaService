@@ -2,7 +2,7 @@ package com.awe.alpha.controllers
 
 import com.awe.alpha.persistence.dto.request.AccountSignUpForm
 import com.awe.alpha.persistence.dto.response.BasicStringResponse
-import com.awe.alpha.services.AccountServiceImpl
+import com.awe.alpha.services.AccountService
 import com.awe.alpha.utils.exceptions.WrongArgumentsException
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,26 +15,21 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("api/user")
-class AccountController @Autowired constructor(val _accountService: AccountServiceImpl) {
+class AccountController @Autowired constructor(val _accountService: AccountService) {
 
-    private val _logger = Logger.getLogger(AccountController::class.java)
+    private val _log = Logger.getLogger(AccountController::class.java)
 
     @PostMapping("/registration")
     @ResponseBody
     fun register(@Valid @RequestBody accountSignUpForm: AccountSignUpForm, bindingResult: BindingResult,
                  request: HttpServletRequest): ResponseEntity<*> {
-        _logger.debug("Start register process...")
+        _log.info("Start register process...")
 
         if (bindingResult.hasErrors()) {
             throw WrongArgumentsException(bindingResult.allErrors[0].defaultMessage)
         }
 
         val account = _accountService.createAccount(accountSignUpForm)
-
-        _logger.debug("Account with username [${account.username}] was created")
-//
-//        // send registration mail via event
-//        applicationEventPublisher.publishEvent(OnRegistrationCompleteEvent(account, request.locale, request.contextPath))
 
         return ResponseEntity.status(HttpStatus.CREATED).body(BasicStringResponse("Account was successfully created"))
     }
