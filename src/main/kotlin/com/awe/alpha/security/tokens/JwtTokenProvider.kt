@@ -31,7 +31,7 @@ class JwtTokenProvider {
 
     @PostConstruct
     protected fun init() {
-//        secretKey = Base64.getEncoder().encodeToString(secretKey.toByteArray())
+        secretKey = Base64.getEncoder().encodeToString(secretKey.toByteArray())
     }
 
     fun createToken(username: String?, roles: List<String?>): String {

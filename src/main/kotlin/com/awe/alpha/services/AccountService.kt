@@ -79,4 +79,17 @@ class AccountService {
 
         throw WrongArgumentsException("Account doesn't exist")
     }
+
+    fun findByUUID(uuid: String): AccountResponse {
+        val req = ProducerRecord<String, String>("findAccountByUUIDTopic", null, "findByUUID", uuid)
+        val res = _replyTemp.sendAndReceive(req).get().value()
+        val response = _converter.readValue(res, AweResponse::class.java)
+
+        if (!response.isSuccessful) {
+            throw WrongArgumentsException("Account doesn't exist")
+        }
+
+        _log.info("AweResponse contains: ${response.value}")
+        return _converter.readValue(response.value, AccountResponse::class.java)
+    }
 }

@@ -2,6 +2,7 @@ package com.awe.alpha.controllers
 
 import com.awe.alpha.persistence.dto.request.AccountLoginForm
 import com.awe.alpha.persistence.dto.request.AccountSignUpForm
+import com.awe.alpha.persistence.dto.response.AccountEntityResponse
 import com.awe.alpha.persistence.dto.stream.response.AccountResponse
 import com.awe.alpha.security.tokens.JwtTokenProvider
 import com.awe.alpha.services.AccountService
@@ -14,6 +15,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletRequest
@@ -41,7 +44,7 @@ class AccountController @Autowired constructor(val _accountService: AccountServi
         }
 
         val account = _accountService.createAccount(accountSignUpForm)
-        return ResponseEntity.status(HttpStatus.CREATED).body(account)
+        return ResponseEntity.status(HttpStatus.CREATED).body(AccountEntityResponse(account))
     }
 
     @PostMapping("/sign-in")
@@ -67,5 +70,13 @@ class AccountController @Autowired constructor(val _accountService: AccountServi
         // return token for user
         val token = _tokenProvided.createToken(user.username, user.permissions)
         return ResponseBuilder().addField("token", token).toJSON()
+    }
+
+    @GetMapping("/{uuid}")
+    @ResponseBody
+    fun getProfileInformation(@PathVariable("uuid") accountUUID: String,
+                              @AuthenticationPrincipal userDetails: UserDetails): ResponseEntity<*> {
+        val account = _accountService.findByUUID(accountUUID)
+        return ResponseEntity.ok(AccountEntityResponse(account))
     }
 }

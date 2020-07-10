@@ -1,6 +1,5 @@
-package com.music.awesomemusic.security.tokens
+package com.awe.alpha.security.tokens
 
-import com.awe.alpha.security.tokens.JwtTokenProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.GenericFilterBean
