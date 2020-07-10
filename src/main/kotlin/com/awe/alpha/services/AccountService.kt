@@ -3,6 +3,9 @@ package com.awe.alpha.services
 import com.awe.alpha.persistence.domain.Account
 import com.awe.alpha.persistence.dto.request.AccountSignUpForm
 import com.awe.alpha.persistence.dto.stream.request.AccountCreateRequestStream
+import com.awe.alpha.persistence.dto.stream.response.AccountResponse
+import com.awe.alpha.persistence.dto.stream.response.AweResponse
+import com.awe.alpha.utils.exceptions.WrongArgumentsException
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.log4j.Logger
@@ -31,17 +34,23 @@ class AccountService {
         TODO("Not yet implemented")
     }
 
-    fun createAccount(signUpForm: AccountSignUpForm) {
+    fun createAccount(signUpForm: AccountSignUpForm): AccountResponse {
         _log.debug("Sending create account event to account service...")
-
         val producerRecord = ProducerRecord<String, String>("createAccountTopic", null, "createAccount",
                 _converter.writeValueAsString(AccountCreateRequestStream(signUpForm)))
+        val res = this._replyTemp.sendAndReceive(producerRecord).get().value()
+        _log.debug("Got response from account service + $res")
+        val response = _converter.readValue(res, AweResponse::class.java)
 
-        _log.info(producerRecord.value())
-        val response = this._replyTemp.sendAndReceive(producerRecord).get()
+        // if response is fine
+        if (response.isSuccessful) {
+            _log.info("AweResponse contains: ${response.value}")
+            return _converter.readValue(response.value, AccountResponse::class.java)
+        }
 
-        _log.debug("Got response from account service + ${response.value()}")
-//        return _objectMapper.readValue(response.value(), BasicKafkaResponse::class.java)
+        // throw exception if response is not fine
+        // TODO: Write more advanced handle logic! Looks terrible
+        throw WrongArgumentsException("Account wasn't created successfully")
     }
 
     fun findByEmail(email: String) {

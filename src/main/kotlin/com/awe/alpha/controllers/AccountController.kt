@@ -1,7 +1,6 @@
 package com.awe.alpha.controllers
 
 import com.awe.alpha.persistence.dto.request.AccountSignUpForm
-import com.awe.alpha.persistence.dto.response.BasicStringResponse
 import com.awe.alpha.services.AccountService
 import com.awe.alpha.utils.exceptions.WrongArgumentsException
 import org.apache.log4j.Logger
@@ -13,6 +12,9 @@ import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 
+/**
+ * Controller is responsible for all account related queries
+ */
 @RestController
 @RequestMapping("api/user")
 class AccountController @Autowired constructor(val _accountService: AccountService) {
@@ -25,12 +27,12 @@ class AccountController @Autowired constructor(val _accountService: AccountServi
                  request: HttpServletRequest): ResponseEntity<*> {
         _log.info("Start register process...")
 
+        // validation
         if (bindingResult.hasErrors()) {
             throw WrongArgumentsException(bindingResult.allErrors[0].defaultMessage)
         }
 
         val account = _accountService.createAccount(accountSignUpForm)
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(BasicStringResponse("Account was successfully created"))
+        return ResponseEntity.status(HttpStatus.CREATED).body(account)
     }
 }
