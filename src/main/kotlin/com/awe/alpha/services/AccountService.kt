@@ -1,6 +1,5 @@
 package com.awe.alpha.services
 
-import com.awe.alpha.persistence.domain.Account
 import com.awe.alpha.persistence.dto.request.AccountSignUpForm
 import com.awe.alpha.persistence.dto.stream.request.AccountCreateRequestStream
 import com.awe.alpha.persistence.dto.stream.response.AccountResponse
@@ -36,10 +35,10 @@ class AccountService {
 
     fun createAccount(signUpForm: AccountSignUpForm): AccountResponse {
         _log.debug("Sending create account event to account service...")
-        val producerRecord = ProducerRecord<String, String>("createAccountTopic", null, "createAccount",
+        val req = ProducerRecord<String, String>("createAccountTopic", null, "createAccount",
                 _converter.writeValueAsString(AccountCreateRequestStream(signUpForm)))
-        val res = this._replyTemp.sendAndReceive(producerRecord).get().value()
-        _log.debug("Got response from account service + $res")
+        val res = this._replyTemp.sendAndReceive(req).get().value()
+        _log.debug("Response for createAccount: $res")
         val response = _converter.readValue(res, AweResponse::class.java)
 
         // if response is fine
@@ -53,13 +52,31 @@ class AccountService {
         throw WrongArgumentsException("Account wasn't created successfully")
     }
 
-    fun findByEmail(email: String) {
-        val producerRecord = ProducerRecord<String, String>("findAccountByEmail", null, "createAccount", email)
-        val response = _replyTemp.sendAndReceive(producerRecord).get()
+    fun findByEmail(email: String): AccountResponse {
+        val req = ProducerRecord<String, String>("findAccountByEmailTopic", null, "findByEmail", email)
+        val res = _replyTemp.sendAndReceive(req).get().value()
+        _log.info("Response for findAccountByEmail: $res")
+        val response = _converter.readValue(res, AweResponse::class.java)
+
+        if (response.isSuccessful) {
+            _log.info("AweResponse contains: ${response.value}")
+            return _converter.readValue(response.value, AccountResponse::class.java)
+        }
+
+        // TODO: Write more advanced logic!1!
+        throw WrongArgumentsException("Account doesn't exist")
     }
 
-    fun findByUsername(username: String): Account {
-        val record = ProducerRecord<String, String>("findAccountByUsername", null, "findByUsername", username)
-        return _converter.readValue<Account>(_replyTemp.sendAndReceive(record).get().value(), Account::class.java)
+    fun findByUsername(username: String): AccountResponse {
+        val req = ProducerRecord<String, String>("findAccountByUsernameTopic", null, "findByUsername", username)
+        val res = _replyTemp.sendAndReceive(req).get().value()
+        val response = _converter.readValue(res, AweResponse::class.java)
+
+        if (response.isSuccessful) {
+            _log.info("AweResponse contains: ${response.value}")
+            return _converter.readValue(response.value, AccountResponse::class.java)
+        }
+
+        throw WrongArgumentsException("Account doesn't exist")
     }
 }
