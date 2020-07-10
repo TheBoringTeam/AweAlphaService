@@ -32,3 +32,5 @@ build/
 
 ### App ###
 src/main/resources/bootstrap.properties
+
+*.log

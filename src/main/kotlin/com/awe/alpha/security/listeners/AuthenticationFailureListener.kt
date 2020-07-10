@@ -15,14 +15,11 @@ class AuthenticationFailureListener : ApplicationListener<AuthenticationFailureB
     @Autowired
     private lateinit var loginAttemptsService: LoginAttemptsService
 
-
-    private val _logger = Logger.getLogger(AuthenticationFailureListener::class.java.simpleName)
+    private val _log = Logger.getLogger(AuthenticationFailureListener::class.java.simpleName)
 
     override fun onApplicationEvent(event: AuthenticationFailureBadCredentialsEvent) {
         val context = SecurityContextHolder.getContext()
         val auth = context.authentication.details as WebAuthenticationDetails
-
-
         loginAttemptsService.loginFailed(auth.remoteAddress)
     }
 

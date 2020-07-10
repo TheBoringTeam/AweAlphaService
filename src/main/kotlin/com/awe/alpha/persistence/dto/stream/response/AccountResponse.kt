@@ -8,6 +8,9 @@ class AccountResponse @JsonCreator constructor(
         @JsonProperty("username")
         var username: String,
 
+        @JsonProperty("password")
+        var password: String,
+
         @JsonProperty("email")
         val email: String,
 
