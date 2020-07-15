@@ -29,3 +29,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### App ###
+src/main/resources/bootstrap.properties
+
+*.log
