@@ -4,6 +4,7 @@ import com.awe.alpha.persistence.dto.request.AccountSignUpForm
 import com.awe.alpha.persistence.dto.stream.request.AccountCreateRequestStream
 import com.awe.alpha.persistence.dto.stream.response.AccountResponse
 import com.awe.alpha.persistence.dto.stream.response.AweResponse
+import com.awe.alpha.utils.exceptions.ResourceNotFoundException
 import com.awe.alpha.utils.exceptions.WrongArgumentsException
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -64,7 +65,7 @@ class AccountService {
         }
 
         // TODO: Write more advanced logic!1!
-        throw WrongArgumentsException("Account doesn't exist")
+        throw ResourceNotFoundException("Account doesn't exist")
     }
 
     fun findByUsername(username: String): AccountResponse {
@@ -77,7 +78,7 @@ class AccountService {
             return _converter.readValue(response.value, AccountResponse::class.java)
         }
 
-        throw WrongArgumentsException("Account doesn't exist")
+        throw ResourceNotFoundException("Account doesn't exist")
     }
 
     fun findByUUID(uuid: String): AccountResponse {
@@ -86,7 +87,7 @@ class AccountService {
         val response = _converter.readValue(res, AweResponse::class.java)
 
         if (!response.isSuccessful) {
-            throw WrongArgumentsException("Account doesn't exist")
+            throw ResourceNotFoundException("Account doesn't exist")
         }
 
         _log.info("AweResponse contains: ${response.value}")
