@@ -30,6 +30,8 @@ class AccountSignUpForm @JsonCreator constructor(
         @field:JsonProperty("is_collective")
         @field:NotNull(message = "Collective could not be null")
         private val isCollectiveField: Boolean?
+
+        //TODO: Add language
 ) {
     val username: String
         get() = usernameField!!

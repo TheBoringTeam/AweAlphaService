@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate
 import org.springframework.stereotype.Service
@@ -25,9 +26,6 @@ class AccountService {
 
     @Autowired
     private lateinit var _replyTemp: ReplyingKafkaTemplate<String, String, String>
-
-    @Autowired
-    private lateinit var _kafkaTemplate: KafkaTemplate<String, String>
 
 
     fun updateAccount() {
