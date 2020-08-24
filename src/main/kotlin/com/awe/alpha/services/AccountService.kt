@@ -10,22 +10,19 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate
 import org.springframework.stereotype.Service
 
 
 @Service
-class AccountService {
+class AccountService @Autowired constructor(
+        private val replyTemplate: ReplyingKafkaTemplate<String, String, String>
+) {
 
     private val _log = Logger.getLogger(AccountService::class.java)
 
     // Object mapper
     private val _converter = ObjectMapper()
-
-    @Autowired
-    private lateinit var _replyTemp: ReplyingKafkaTemplate<String, String, String>
 
 
     fun updateAccount() {
@@ -36,7 +33,7 @@ class AccountService {
         _log.debug("Sending create account event to account service...")
         val req = ProducerRecord<String, String>("createAccountTopic", null, "createAccount",
                 _converter.writeValueAsString(AccountCreateRequestStream(signUpForm)))
-        val res = this._replyTemp.sendAndReceive(req).get().value()
+        val res = replyTemplate.sendAndReceive(req).get().value()
         _log.debug("Response for createAccount: $res")
         val response = _converter.readValue(res, AweResponse::class.java)
 
@@ -53,7 +50,7 @@ class AccountService {
 
     fun findByEmail(email: String): AccountResponse {
         val req = ProducerRecord<String, String>("findAccountByEmailTopic", null, "findByEmail", email)
-        val res = _replyTemp.sendAndReceive(req).get().value()
+        val res = replyTemplate.sendAndReceive(req).get().value()
         _log.info("Response for findAccountByEmail: $res")
         val response = _converter.readValue(res, AweResponse::class.java)
 
@@ -68,7 +65,7 @@ class AccountService {
 
     fun findByUsername(username: String): AccountResponse {
         val req = ProducerRecord<String, String>("findAccountByUsernameTopic", null, "findByUsername", username)
-        val res = _replyTemp.sendAndReceive(req).get().value()
+        val res = replyTemplate.sendAndReceive(req).get().value()
         val response = _converter.readValue(res, AweResponse::class.java)
 
         if (response.isSuccessful) {
@@ -81,7 +78,7 @@ class AccountService {
 
     fun findByUUID(uuid: String): AccountResponse {
         val req = ProducerRecord<String, String>("findAccountByUUIDTopic", null, "findByUUID", uuid)
-        val res = _replyTemp.sendAndReceive(req).get().value()
+        val res = replyTemplate.sendAndReceive(req).get().value()
         val response = _converter.readValue(res, AweResponse::class.java)
 
         if (!response.isSuccessful) {
@@ -90,5 +87,18 @@ class AccountService {
 
         _log.info("AweResponse contains: ${response.value}")
         return _converter.readValue(response.value, AccountResponse::class.java)
+    }
+
+    fun existsByUsername(username: String): Boolean {
+        val req = ProducerRecord<String, String>("existsAccountByUsernameTopic", null, "existsByUsername", username)
+        val res = replyTemplate.sendAndReceive(req).get().value()
+        val response = _converter.readValue(res, AweResponse::class.java)
+
+        // TODO: Create custom exception for wrong responses from account service
+        if (!response.isSuccessful) {
+            throw ResourceNotFoundException("Some shit happened during checking whether account exists with provided username")
+        }
+        _log.info("AweResponse contains: ${response.value}")
+        return _converter.readValue(response.value, Boolean::class.java)
     }
 }

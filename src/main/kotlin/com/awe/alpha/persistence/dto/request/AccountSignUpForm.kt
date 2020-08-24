@@ -2,6 +2,7 @@ package com.awe.alpha.persistence.dto.request
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.awe.alpha.utils.validations.annotations.UniqueUsername
 import javax.validation.constraints.*
 
 
@@ -9,7 +10,7 @@ class AccountSignUpForm @JsonCreator constructor(
         // TODO: Add unique username check
         @field:JsonProperty("username")
         @field:NotNull(message = "Username could not be empty")
-//        @field:UniqueUsername
+        @field:UniqueUsername
         @Size(message = "Login should be from 6 to 32 length", min = 5, max = 32)
         @field:Pattern(regexp = "^(?=[a-zA-Z0-9._])(?!.*[_.]{2})[^_.].*[^_.]\$",
                 message = "Username format is not correct")
