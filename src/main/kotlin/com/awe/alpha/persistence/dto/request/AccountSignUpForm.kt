@@ -1,13 +1,14 @@
 package com.awe.alpha.persistence.dto.request
 
+import com.awe.alpha.utils.validations.annotations.UniqueEmail
+import com.awe.alpha.utils.validations.annotations.UniqueUsername
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.awe.alpha.utils.validations.annotations.UniqueUsername
 import javax.validation.constraints.*
 
 
 class AccountSignUpForm @JsonCreator constructor(
-        // TODO: Add unique username check
+
         @field:JsonProperty("username")
         @field:NotNull(message = "Username could not be empty")
         @field:UniqueUsername
@@ -21,11 +22,11 @@ class AccountSignUpForm @JsonCreator constructor(
         @field:Size(message = "Password should be from 6 to 32 length", min = 6, max = 32)
         private val passwordField: String?,
 
-        // TODO: Add unique username check
+        // TODO: Add unique em check
         @field:JsonProperty("email")
         @field:NotEmpty(message = "Email could not be empty")
         @field:Email(message = "Email should be properly formatted")
-//        @field:UniqueEmail(message = "User with this email already exists")
+        @field:UniqueEmail(message = "User with this email already exists")
         private val emailField: String?,
 
         @field:JsonProperty("is_collective")

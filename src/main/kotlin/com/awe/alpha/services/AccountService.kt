@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate
 import org.springframework.stereotype.Service
 
-
+/**
+ * Service responsible for transferring any account related shit with Account Service. Probably it worth to refactor
+ * this class, bc a lot of line of code...
+ */
 @Service
 class AccountService @Autowired constructor(
         private val replyTemplate: ReplyingKafkaTemplate<String, String, String>
@@ -97,6 +100,19 @@ class AccountService @Autowired constructor(
         // TODO: Create custom exception for wrong responses from account service
         if (!response.isSuccessful) {
             throw ResourceNotFoundException("Some shit happened during checking whether account exists with provided username")
+        }
+        _log.info("AweResponse contains: ${response.value}")
+        return _converter.readValue(response.value, Boolean::class.java)
+    }
+
+    fun existsByEmail(email: String): Boolean {
+        // TODO: Could be moved to separate (static?) method
+        val req = ProducerRecord<String, String>("existsAccountByEmailTopic", null, "existsByEmail", email)
+        val res = replyTemplate.sendAndReceive(req).get().value()
+        val response = _converter.readValue(res, AweResponse::class.java)
+
+        if (!response.isSuccessful) {
+            throw ResourceNotFoundException("Error during checking email unique values")
         }
         _log.info("AweResponse contains: ${response.value}")
         return _converter.readValue(response.value, Boolean::class.java)
